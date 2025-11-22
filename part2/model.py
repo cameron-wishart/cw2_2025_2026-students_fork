@@ -122,24 +122,51 @@ class CausalSelfAttention(nn.Module):
         """
         B, T, C = x.size()
         ### Your code here (~8-15 lines) ###
-        raise NotImplementedError("Implement the forward method in CausalSelfAttention in model.py")
+        # raise NotImplementedError("Implement the forward method in CausalSelfAttention in model.py")
         # Step 1: Calculate query, key, values for all heads
         # (B, nh, T, hs)
-      
+        # embedding size is number of heads * head size
+        # print(B,T,C)
+        head_size = C // self.n_head # 12 / 6 = 2
+        # print(self.n_head) # 6
+        # print(head_size) # 2
+        # print(head_size * self.n_head) #12
+        K = self.key(x)
+        Q = self.query(x)
+        V = self.value(x)
+        # print(K.shape) # [2,4,12] [B,T,C]
+        K = K.view(B,T,self.n_head,head_size)
+        Q = Q.view(B,T,self.n_head,head_size)
+        V = V.view(B,T,self.n_head,head_size)
+        # print(K.shape) # [2,4,6,2] [B,T,nh,hs]
+        K = K.permute(0,2,1,3)
+        Q = Q.permute(0,2,1,3)
+        V = V.permute(0,2,1,3)
+        # print(K.shape) # [2,6,4,2] [B,nh,T,hs]
         # Step 2: Compute attention scores
         # Self-attend: (B, nh, T, hs) x (B, nh, hs, T) -> (B, nh, T, T)
-
+        scores = Q @ K.transpose(-2,-1)
+        scores = scores / (head_size ** 0.5)
         # Step 3: Masking out the future tokens (causal) and softmax
-
+        # mask size [B nh, T, T] -> [all,all,T,T]
+        scores = scores.masked_fill(self.mask[:,:,:T, :T] == 0, float('-inf'))
+        scores = torch.softmax(scores, dim=-1)
+        scores = self.attn_drop(scores)
+        # attention = self.proj(scores)
         # Step 4: Compute the attention output
         # (B, nh, T, T) x (B, nh, T, hs) -> (B, nh, T, hs)
-
+        attn_output = scores @ V
+        # print(attn_output.shape)
         # Step 5: re-assemble all head outputs side by side
         # (B, T, nh, hs) -> (B, T, C)
-
+        attn_output = attn_output.transpose(1,2)
+        # print(attn_output.shape)
+        attn_output = attn_output.reshape(B,T,C)
         # Step 6: output projection + dropout
+        y = self.proj(attn_output)
+        y = self.resid_drop(y)
         ### End of your code ###
-        return GPTAttentionOutput(output=y, attentions=attention)
+        return GPTAttentionOutput(output=y, attentions=scores)
 
 
 class Block(nn.Module):

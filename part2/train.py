@@ -274,56 +274,56 @@ def parse_args():
     parser.add_argument(
         "--model-config",
         type=Path,
-        required=True,
+        default=Path("part2", "model_config.yaml"),
         help="Path to the model YAML config.",
     )
 
     parser.add_argument(
         "--train-config",
         type=Path,
-        required=True,
+        default=Path("part2", "train_config.yaml"),
         help="Path to the training YAML config.",
     )
 
     parser.add_argument(
         "--train-source-file",
         type=Path,
-        default=Path("..", "multi30k_data", "train.en"),
+        default=Path("multi30k_data", "train.en"),
         help="Path to the train source file, containing source sentences.",
     )
 
     parser.add_argument(
         "--train-target-file",
         type=Path,
-        default=Path("..", "multi30k_data", "train.fr"),
+        default=Path("multi30k_data", "train.fr"),
         help="Path to the train target file, containing gold-standard target sentences.",
     )
 
     parser.add_argument(
         "--dev-source-file",
         type=Path,
-        default=Path("..", "multi30k_data", "val.en"),
+        default=Path("multi30k_data", "val.en"),
         help="Path to the dev source file, containing source sentences.",
     )
 
     parser.add_argument(
         "--dev-target-file",
         type=Path,
-        default=Path("..", "multi30k_data", "val.fr"),
+        default=Path("multi30k_data", "val.fr"),
         help="Path to the dev target file, containing gold-standard target sentences.",
     )
 
     parser.add_argument(
         "--vocab-file",
         type=Path,
-        default=Path("vocab", "vocab.json"),
+        default=Path("part2", "vocab", "vocab.json"),
         help="Path to the vocabulary file.",
     )
 
     parser.add_argument(
         "--sentence-piece-model-file",
         type=Path,
-        default=Path("vocab", "spm.model"),
+        default=Path("part2", "vocab", "spm.model"),
         help="Path to the SentencePiece model file.",
     )
 
