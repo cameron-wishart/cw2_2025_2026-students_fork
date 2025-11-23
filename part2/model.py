@@ -323,15 +323,17 @@ class GPT(nn.Module):
 
             if do_sample:
                 ### Your code here (~5-12 lines) ###
-                raise NotImplementedError("Implement sampling in the generate method in model.py (MSc students only)")
+                # raise NotImplementedError("Implement sampling in the generate method in model.py (MSc students only)")
                 # 1. If top_k is not None, crop the logits to only the top k options
-
+                if(top_k is not None):
+                    values,indices = torch.topk(logits, top_k)
                 # 2. If top_p is not None, crop the logits to only the top p options
-
                 # apply softmax to convert logits to (normalized) probabilities
+                    predicted_ids = torch.softmax(values,dim=-1)
                 # sample from the distribution using the re-normalized probabilities
-
+                    predicted_id = torch.multinomial(predicted_ids,1)
                 # append sampled index to the running sequence and continue
+                    input_ids = torch.cat((input_ids,predicted_id), dim=1)
                 ### End of your code ###
             else:
                 # greedily take the argmax
