@@ -121,14 +121,14 @@ def parse_args():
     parser.add_argument(
         "--checkpoint-path",
         type=Path,
-        required=True,
+        default=Path("models","small_transformer.model"),
         help="Path to the model checkpoint.",
     )
 
     parser.add_argument(
         "--model-config",
         type=Path,
-        required=True,
+        default=Path("model_config.yaml"),
         help="Path to the model YAML config.",
     )
 

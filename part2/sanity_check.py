@@ -19,7 +19,7 @@ model = GPT(model_config)
 input_embeds = torch.randn(2, model_config.block_size, model_config.n_embed)
 with torch.inference_mode():
     attention_output = model.blocks[0](input_embeds, output_attentions=True).attentions
-    expected_output = torch.load("sanity_check.pt")
+    expected_output = torch.load("part2/sanity_check.pt")
 
 # check shapes
 shape_check = attention_output.shape == expected_output.shape
