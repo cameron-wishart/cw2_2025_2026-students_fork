@@ -121,7 +121,7 @@ def parse_args():
     parser.add_argument(
         "--checkpoint-path",
         type=Path,
-        default=Path("models","small_transformer.model"),
+        default=Path("..","part4","nmt.model"),
         help="Path to the model checkpoint.",
     )
 
@@ -171,25 +171,28 @@ def parse_args():
     parser.add_argument(
         "--do-sample",
         action="store_true",
+        default=True,
         help="Whether to use sampling, use greedy decoding otherwise.",
     )
 
     parser.add_argument(
         "--top-k",
         type=int,
+        default=10,
         help="If specified, only the top k tokens with the highest probability are considered for generation.",
     )
     
     parser.add_argument(
         "--top-p",
         type=float,
+        default=0.95,
         help="If specified, only the smallest set of tokens with cumulative probability >= top_p are considered for generation.",
     )
     
     parser.add_argument(
         "--temperature",
         type=float,
-        default=1.0,
+        default=0.5,
         help="The value used to module the next token probabilities.",
     )
 

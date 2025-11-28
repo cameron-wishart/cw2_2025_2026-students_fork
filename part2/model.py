@@ -352,17 +352,27 @@ class GPT(nn.Module):
                 ### Your code here (~5-12 lines) ###
                 # raise NotImplementedError("Implement sampling in the generate method in model.py (MSc students only)")
                 # 1. If top_k is not None, crop the logits to only the top k options
+                masked_logits = torch.full_like(logits, float('-inf'))
                 if(top_k is not None):
-                    values,indices = torch.topk(logits, top_k)
+                    values, indices = torch.topk(logits, top_k, dim=-1)
+                    masked_logits = masked_logits.scatter(-1, indices, values)
+                else: 
+                    masked_logits = logits.clone()
                 # 2. If top_p is not None, crop the logits to only the top p options
+                if(top_p is not None): 
+                    sorted_v,sorted_i = torch.sort(masked_logits, descending=True)
+                    cumulative_probs = torch.softmax(sorted_v, dim=-1).cumsum(dim=-1)
+                    sorted_mask = cumulative_probs > top_p
+                    mask = sorted_mask.scatter(-1, sorted_i, sorted_mask)
+                    masked_logits = masked_logits.masked_fill(mask, float('-inf'))
                 # apply softmax to convert logits to (normalized) probabilities
-                    predicted_ids = torch.softmax(values,dim=-1)
+                probability_ids = torch.softmax(masked_logits,dim=-1)
                 # sample from the distribution using the re-normalized probabilities
-                    predicted_id = torch.multinomial(predicted_ids,1)
+                predicted_id = torch.multinomial(probability_ids,1)
                 # append sampled index to the running sequence and continue
-                    input_ids = torch.cat((input_ids,predicted_id), dim=1)
+                input_ids = torch.cat((input_ids,predicted_id), dim=1)
                 ### End of your code ###
-            else:
+            else: 
                 # greedily take the argmax
                 predicted_id = torch.argmax(logits, dim=-1, keepdim=True)
                 # append predicted index to the running sequence and continue
