@@ -209,9 +209,4 @@ __marimo__/
 # tmp
 vocab
 wandb
-src.model
-src.vocab
-tgt.model
-tgt.vocab
-models
 amd_binaries
